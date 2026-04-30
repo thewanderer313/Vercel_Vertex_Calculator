@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vertex Distance Converter</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a212b;
+      --border: #2a3441;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #4a9eff;
+      --accent-hover: #6bb0ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .field {
+      margin-bottom: 1rem;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+      font-weight: 500;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.65rem 0.75rem;
+      color: var(--text);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .result {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .result-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .result-value {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .result-value.placeholder {
+      color: var(--muted);
+    }
+
+    .toggle-group {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+
+    .toggle-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .toggle-btn:hover:not(.active) {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .formula {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 1rem;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.75rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Vertex Distance Converter</h1>
+      <p class="subtitle">Convert spectacle Rx to contact lens power</p>
+    </header>
+
+    <div class="card">
+      <div class="toggle-group">
+        <button class="toggle-btn active" data-direction="spec-to-cl">Spec → CL</button>
+        <button class="toggle-btn" data-direction="cl-to-spec">CL → Spec</button>
+      </div>
+
+      <div class="field">
+        <label for="power" id="power-label">Spectacle Power (D)</label>
+        <input type="number" id="power" step="0.25" placeholder="e.g. -8.00">
+      </div>
+
+      <div class="field">
+        <label for="vertex">Vertex Distance (mm)</label>
+        <input type="number" id="vertex" step="0.5" value="12">
+      </div>
+
+      <div class="result">
+        <div class="result-label" id="result-label">Contact Lens Power</div>
+        <div class="result-value placeholder" id="result">—</div>
+      </div>
+
+      <div class="formula">F<sub>cl</sub> = F<sub>sp</sub> / (1 − d × F<sub>sp</sub>)</div>
+    </div>
+
+    <footer>
+      Clinical reference only · Always verify with trial lens
+    </footer>
+  </div>
+
+  <script>
+    const powerInput = document.getElementById('power');
+    const vertexInput = document.getElementById('vertex');
+    const resultEl = document.getElementById('result');
+    const resultLabel = document.getElementById('result-label');
+    const powerLabel = document.getElementById('power-label');
+    const toggleBtns = document.querySelectorAll('.toggle-btn');
+
+    let direction = 'spec-to-cl';
+
+    function calculate() {
+      const power = parseFloat(powerInput.value);
+      const vertexMm = parseFloat(vertexInput.value);
+
+      if (isNaN(power) || isNaN(vertexMm)) {
+        resultEl.textContent = '—';
+        resultEl.classList.add('placeholder');
+        return;
+      }
+
+      const d = vertexMm / 1000; // mm to meters
+      let converted;
+
+      if (direction === 'spec-to-cl') {
+        // Spectacle to contact lens: Fcl = Fsp / (1 - d*Fsp)
+        converted = power / (1 - d * power);
+      } else {
+        // Contact lens to spectacle: Fsp = Fcl / (1 + d*Fcl)
+        converted = power / (1 + d * power);
+      }
+
+      // Round to nearest 0.25 D
+      const rounded = Math.round(converted * 4) / 4;
+      const sign = rounded > 0 ? '+' : '';
+      resultEl.textContent = `${sign}${rounded.toFixed(2)} D`;
+      resultEl.classList.remove('placeholder');
+    }
+
+    function setDirection(newDirection) {
+      direction = newDirection;
+      toggleBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.direction === newDirection);
+      });
+
+      if (direction === 'spec-to-cl') {
+        powerLabel.textContent = 'Spectacle Power (D)';
+        resultLabel.textContent = 'Contact Lens Power';
+      } else {
+        powerLabel.textContent = 'Contact Lens Power (D)';
+        resultLabel.textContent = 'Spectacle Power';
+      }
+      calculate();
+    }
+
+    toggleBtns.forEach(btn => {
+      btn.addEventListener('click', () => setDirection(btn.dataset.direction));
+    });
+
+    powerInput.addEventListener('input', calculate);
+    vertexInput.addEventListener('input', calculate);
+  </script>
+</body>
+</html>
