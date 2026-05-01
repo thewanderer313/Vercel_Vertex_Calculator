@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meade Optical Tech</title>
+  <meta name="description" content="Clinical tools and references for optometry practice.">
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a212b;
+      --panel-hover: #232b37;
+      --border: #2a3441;
+      --border-hover: #3a4555;
+      --text: #e6edf3;
+      --text-secondary: #c9d1d9;
+      --muted: #8b949e;
+      --accent: #4a9eff;
+      --accent-hover: #6bb0ff;
+      --success: #3fb950;
+      --warning: #d29922;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 0;
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .logo-mark {
+      width: 24px;
+      height: 24px;
+      background: var(--accent);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 0.85rem;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    }
+
+    nav {
+      display: flex;
+      gap: 1.75rem;
+      font-size: 0.9rem;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    nav a:hover {
+      color: var(--text);
+    }
+
+    /* Hero */
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 5rem 1.5rem 3rem;
+    }
+
+    .eyebrow {
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      max-width: 700px;
+    }
+
+    .lede {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 620px;
+      line-height: 1.6;
+    }
+
+    /* Section */
+    section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .section-meta {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    }
+
+    /* Tool grid */
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1rem;
+    }
+
+    .tool-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .tool-card:hover {
+      background: var(--panel-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+    }
+
+    .tool-card.disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .tool-card.disabled:hover {
+      transform: none;
+      background: var(--panel);
+      border-color: var(--border);
+    }
+
+    .tool-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .tool-name {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .tool-status {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      text-transform: uppercase;
+    }
+
+    .status-live {
+      background: rgba(63, 185, 80, 0.12);
+      color: var(--success);
+      border: 1px solid rgba(63, 185, 80, 0.3);
+    }
+
+    .status-soon {
+      background: rgba(210, 153, 34, 0.1);
+      color: var(--warning);
+      border: 1px solid rgba(210, 153, 34, 0.25);
+    }
+
+    .tool-description {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.55;
+      margin-bottom: 1rem;
+      flex-grow: 1;
+    }
+
+    .tool-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .tool-card:hover .tool-meta {
+      color: var(--accent);
+    }
+
+    .tool-card.disabled:hover .tool-meta {
+      color: var(--muted);
+    }
+
+    /* About */
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    .about-block h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .about-block p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    footer p + p {
+      margin-top: 0.4rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .hero {
+        padding: 3rem 1.5rem 2rem;
+      }
+      nav {
+        gap: 1rem;
+        font-size: 0.85rem;
+      }
+      .section-header {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <span class="logo-mark">M</span>
+        Meade Optical Tech
+      </a>
+      <nav>
+        <a href="#tools">Tools</a>
+        <a href="#about">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero">
+    <p class="eyebrow">Clinical tools · v0.1</p>
+    <h1>Practical software for optometric practice.</h1>
+    <p class="lede">A growing collection of clinical calculators, references, and workflow tools — built in-practice, used in-practice. Free to use, no signup required.</p>
+  </div>
+
+  <section id="tools">
+    <div class="section-header">
+      <h2>Tools</h2>
+      <span class="section-meta">1 live · 2 in development</span>
+    </div>
+
+    <div class="tool-grid">
+      <a href="/vertex/" class="tool-card">
+        <div class="tool-header">
+          <div class="tool-name">Vertex Distance Converter</div>
+          <span class="tool-status status-live">Live</span>
+        </div>
+        <p class="tool-description">Convert spectacle Rx to contact lens power and back, accounting for vertex distance. Useful for any patient over ±4.00 D being fit into contacts.</p>
+        <div class="tool-meta">→ Open tool</div>
+      </a>
+
+      <div class="tool-card disabled">
+        <div class="tool-header">
+          <div class="tool-name">PD Calculator</div>
+          <span class="tool-status status-soon">Soon</span>
+        </div>
+        <p class="tool-description">Monocular and binocular PD measurement assistance with near-vision compensation for progressive lens fitting.</p>
+        <div class="tool-meta">In development</div>
+      </div>
+
+      <div class="tool-card disabled">
+        <div class="tool-header">
+          <div class="tool-name">Prism Resolver</div>
+          <span class="tool-status status-soon">Soon</span>
+        </div>
+        <p class="tool-description">Resolve horizontal and vertical prism components, calculate net prism magnitude and direction for split prescriptions.</p>
+        <div class="tool-meta">In development</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="section-header">
+      <h2>About</h2>
+      <span class="section-meta">/about</span>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-block">
+        <h3>Built in-practice</h3>
+        <p>Every tool here is built and tested at Meade Optical, an independent optometry practice in Watertown and Lowville, NY. Real chairs, real patients, real workflows.</p>
+      </div>
+      <div class="about-block">
+        <h3>Free, fast, focused</h3>
+        <p>No accounts, no analytics, no friction. Each tool is a single page that loads instantly and works offline once cached. Bookmark what you need.</p>
+      </div>
+      <div class="about-block">
+        <h3>Open development</h3>
+        <p>Source code lives on GitHub. Suggestions, corrections, and contributions welcome. This site grows as the toolkit grows.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Meade Optical Tech · Clinical reference tools</p>
+    <p>Always verify results clinically · Not a substitute for professional judgment</p>
+  </footer>
+</body>
+</html>
